@@ -21,7 +21,6 @@ const ProductScreen = () => {
     }, [dispatch, params.id])
 
     const addToCartHandler = () => {
-        console.log('Add to cart: ' + params.id)
         navigate(`/cart/${params.id}?qty=${qty}`)
     }
 
