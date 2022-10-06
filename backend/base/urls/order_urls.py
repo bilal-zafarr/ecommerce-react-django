@@ -1,4 +1,6 @@
-from base.views import product_views as views
+from base.views import order_views as views
 from django.urls import path
 
-urlpatterns = []
+urlpatterns = [
+    path("add/", views.addOrderItems, name="products-add"),
+]
