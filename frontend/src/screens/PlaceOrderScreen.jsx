@@ -77,7 +77,7 @@ const PlaceOrderScreen = () => {
                                                     <Image src={item.image} alt={item.name} fluid rounded />
                                                 </Col>
                                                 <Col>
-                                                    <a href={`/product/${item.product}`}>{item.name}</a>
+                                                    <a href={`/products/${item.product}`}>{item.name}</a>
                                                 </Col>
                                                 <Col md={4}>
                                                     {item.qty} x ${item.price} = ${(item.qty * item.price).toFixed(2)}
