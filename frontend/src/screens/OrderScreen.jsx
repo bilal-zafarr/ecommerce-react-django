@@ -71,7 +71,6 @@ const OrderScreen = () => {
         <Message variant='danger'>{error}</Message>
     ) : (
         <>
-            <h1>Order: {order._id}</h1>
             <Row>
                 <Col md={8}>
                     <ListGroup variant="flush">
@@ -88,7 +87,7 @@ const OrderScreen = () => {
 
                             <div className="mt-2">
                                 {order.isDelivered ? (
-                                    <Message variant='success'>Delivered on {order.deliveredAt}</Message>
+                                    <Message variant='success'>Delivered on {order.deliveredAt.substring(0, 10)}</Message>
                                 ) : (
                                     <Message variant='warning'>Not Delivered</Message>
                                 )}
@@ -102,7 +101,7 @@ const OrderScreen = () => {
 
                             <div className="mt-2">
                                 {order.isPaid ? (
-                                    <Message variant='success'>Paid on {order.paidAt}</Message>
+                                    <Message variant='success'>Paid on {order.paidAt.substring(0, 10)}</Message>
                                 ) : (
                                     <Message variant='warning'>Not Paid</Message>
                                 )}
@@ -146,7 +145,7 @@ const OrderScreen = () => {
                             <ListGroup.Item>
                                 <Row>
                                     <Col>Items</Col>
-                                    <Col>${order.ItemsPrice}</Col>
+                                    <Col>${order.itemsPrice}</Col>
                                 </Row>
                             </ListGroup.Item>
 
