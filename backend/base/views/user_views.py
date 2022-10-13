@@ -1,11 +1,17 @@
+import jwt
 from base.models import *
 from base.serializer import *
+from base.utils import Util
+from django.conf import settings
 from django.contrib.auth.hashers import make_password
+from django.contrib.sites.shortcuts import get_current_site
+from django.urls import reverse
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 
@@ -33,12 +39,49 @@ def registerUser(request):
             username=data["email"],
             email=data["email"],
             password=make_password(data["password"]),
+            is_active=False,
         )
+
+        # send email for user verification
+        token = RefreshToken.for_user(user).access_token
+        current_site = get_current_site(request).domain
+        relativeLink = reverse("email-verify")
+        absurl = "http://" + current_site + relativeLink + "?token=" + str(token)
+
+        data = {
+            "email_subject": "Verify your email",
+            "email_body": "Hi "
+            + user.first_name
+            + " Click the link below to verify your email \n"
+            + "Link: "
+            + absurl,
+            "to_email": user.email,
+        }
+        Util.send_email(data)
+
         serializer = UserSerializerWithToken(user, many=False)
         return Response(serializer.data)
     except:
         message = {"detail": "User with this email already exists"}
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET"])
+def verify_email(request):
+    token = request.GET.get("token")
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+        user = User.objects.get(id=payload["user_id"])
+        if not user.is_active:
+            user.is_active = True
+            user.save()
+        return Response({"email": "Successfully activated"}, status=status.HTTP_200_OK)
+    except jwt.ExpiredSignatureError as identifier:
+        return Response(
+            {"error": "Activation Expired"}, status=status.HTTP_400_BAD_REQUEST
+        )
+    except jwt.exceptions.DecodeError as identifier:
+        return Response({"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["PUT"])
