@@ -1,11 +1,12 @@
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js"
 import { useEffect } from "react"
-import { Card, Col, Image, ListGroup, Row } from "react-bootstrap"
+import { Button, Card, Col, Image, ListGroup, Row } from "react-bootstrap"
 import { useDispatch, useSelector } from "react-redux"
-import { useParams } from "react-router-dom"
-import { getOrderDetails, payOrder } from "../actions/orderActions"
+import { useNavigate, useParams } from "react-router-dom"
+import { deliverOrder, getOrderDetails, payOrder } from "../actions/orderActions"
 import Loader from "../components/Loader"
 import Message from "../components/Message"
+import { ORDER_DELIVER_RESET, ORDER_PAY_RESET } from "../constants/orderConstants"
 
 const OrderScreen = () => {
 
@@ -15,8 +16,15 @@ const OrderScreen = () => {
     const orderPay = useSelector((state) => state.orderPay)
     const { loading: loadingPay, success: successPay } = orderPay
 
+    const orderDeliver = useSelector((state) => state.orderDeliver)
+    const { loading: loadingDeliver, success: successDeliver } = orderDeliver
+
+    const userLogin = useSelector((state) => state.userLogin)
+    const { userInfo } = userLogin
+
     const params = useParams()
     const dispatch = useDispatch()
+    const navigate = useNavigate()
 
     const orderId = Number(params.id)
 
@@ -25,14 +33,22 @@ const OrderScreen = () => {
     }
 
     useEffect(() => {
-        if (!order || successPay || order._id !== orderId) {
+        if (!userInfo) {
+            navigate("/login")
+        }
+        if (!order || successPay || order._id !== orderId || successDeliver) {
+            dispatch({ type: ORDER_PAY_RESET })
+            dispatch({ type: ORDER_DELIVER_RESET })
             dispatch(getOrderDetails(orderId))
         }
-    }, [order, orderId, dispatch, successPay])
+    }, [order, orderId, dispatch, successPay, successDeliver])
 
     const successPaymentHandler = (paymentResult) => {
         dispatch(payOrder(orderId, paymentResult))
-        dispatch(getOrderDetails(orderId))
+    }
+
+    const deliverHandler = () => {
+        dispatch(deliverOrder(order))
     }
 
     const initialOptionsPayPal = {
@@ -54,8 +70,6 @@ const OrderScreen = () => {
 
     const onApprove = (data, actions) => {
         return actions.order.capture().then(function (details) {
-            // This function shows a transaction success message to your buyer.
-            // alert("Transaction completed by " + details.payer.name.given_name);
             successPaymentHandler(details)
         });
     };
@@ -184,6 +198,19 @@ const OrderScreen = () => {
                                     </ListGroup.Item>
                                 )
                             }
+
+                            {loadingDeliver && <Loader />}
+                            {userInfo && userInfo.isAdmin && order.isPaid && !order.isDelivered && (
+                                <ListGroup.Item>
+                                    <Button
+                                        type='button'
+                                        className='btn btn-block w-100'
+                                        onClick={deliverHandler}
+                                    >
+                                        Mark As Delivered
+                                    </Button>
+                                </ListGroup.Item>
+                            )}
                         </ListGroup>
                     </Card>
                 </Col>
