@@ -34,12 +34,11 @@ class MyTokenObtainPairView(TokenObtainPairView):
 def registerUser(request):
     data = request.data
     try:
-        user = User.objects.create_user(
+        user = User.objects.create(
             first_name=data["name"],
             username=data["email"],
             email=data["email"],
             password=make_password(data["password"]),
-            is_active=False,
         )
 
         # send email for user verification
@@ -72,8 +71,8 @@ def verify_email(request):
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
         user = User.objects.get(id=payload["user_id"])
-        if not user.is_active:
-            user.is_active = True
+        if not user.emailVerified:
+            user.emailVerified = True
             user.save()
         return Response({"email": "Successfully activated"}, status=status.HTTP_200_OK)
     except jwt.ExpiredSignatureError as identifier:

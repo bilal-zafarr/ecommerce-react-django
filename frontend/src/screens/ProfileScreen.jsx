@@ -69,6 +69,7 @@ const ProfileScreen = () => {
         <Row>
             <Col md={3}>
                 <h2>User Profile</h2>
+                {!user.emailVerified && <Message variant="warning">Email is not verified. Check your mail and verify your account</Message>}
                 {message && <Message variant="danger">{message}</Message>}
                 {error && <Message variant="danger">{error}</Message>}
                 {loading && <Loader />}
