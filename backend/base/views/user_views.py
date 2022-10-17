@@ -5,6 +5,7 @@ from base.utils import Util
 from django.conf import settings
 from django.contrib.auth.hashers import make_password
 from django.contrib.sites.shortcuts import get_current_site
+from django.http import JsonResponse
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
@@ -51,8 +52,7 @@ def registerUser(request):
             "email_subject": "Verify your email",
             "email_body": "Hi "
             + user.first_name
-            + " Click the link below to verify your email \n"
-            + "Link: "
+            + "! Click the link below to verify your email \n"
             + absurl,
             "to_email": user.email,
         }
@@ -74,13 +74,17 @@ def verify_email(request):
         if not user.emailVerified:
             user.emailVerified = True
             user.save()
-        return Response({"email": "Successfully activated"}, status=status.HTTP_200_OK)
+        return JsonResponse(
+            {"email": "Successfully activated"}, status=status.HTTP_200_OK
+        )
     except jwt.ExpiredSignatureError as identifier:
         return Response(
             {"error": "Activation Expired"}, status=status.HTTP_400_BAD_REQUEST
         )
     except jwt.exceptions.DecodeError as identifier:
-        return Response({"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse(
+            {"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 @api_view(["PUT"])
