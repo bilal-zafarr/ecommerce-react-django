@@ -16,44 +16,44 @@
 
 * 1 - Clone project:
 
-        git clone https://github.com/bilal-zafarr/ecommerce-react-django.git
+      git clone https://github.com/bilal-zafarr/ecommerce-react-django.git
         
 * 2 - Go to project directory:
 
-        cd ecommerce-react-django
+      cd ecommerce-react-django
 
 * 3 - Create virtual environment: 
         
-        python3 -m venv venv
+      python3 -m venv venv
         
 * 4 - Activate virtual environment: 
         
-        source venv/bin/activate
+      source venv/bin/activate
         
 * 5 - Install requirements: 
 
-        python -m pip install -r requirements.txt
+      python -m pip install -r requirements.txt
         
 * 6 - Create .env file and add your environment variables using .env.example as a reference:
 
-        cd backend
-        touch .env
+      cd backend
+      touch .env
         
 * 7 - Run django server:
 
-        python manage.py runserver
+      python manage.py runserver
         
 * 8 - Open a new terminal and go to frontend directory:
  
-        cd frontend
+      cd frontend
 
 * 9 - Install dependencies:
 
-        npm install
+      npm install
         
 * 10 - Run react server:
 
-        npm start
+      npm start
 
 ## Some Screens
 #### Home Page
