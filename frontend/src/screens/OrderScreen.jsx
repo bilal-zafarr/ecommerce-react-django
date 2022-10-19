@@ -51,6 +51,10 @@ const OrderScreen = () => {
         dispatch(deliverOrder(order))
     }
 
+    const paidHandler = () => {
+        dispatch(payOrder(orderId, {}))
+    }
+
     const initialOptionsPayPal = {
         "client-id": "AYOrux890F3P4g_PnJj09JGU8w8u7m1QUy9WeeYa9X5ZPmsYn8Cn0tFPsOywWNRV05VaAhBsAIf8jzF1",
         currency: "USD",
@@ -95,8 +99,8 @@ const OrderScreen = () => {
 
                             <p>
                                 <strong>Address: </strong>
-                                {order.shippingAddress.address}, {order.shippingAddress.city},{' '}
-                                {order.shippingAddress.postalCode},{' '} {order.shippingAddress.country}
+                                {order.address}, {order.city},{' '}
+                                {order.postalCode},{' '} {order.country}
                             </p>
 
                             <div className="mt-2">
@@ -184,7 +188,7 @@ const OrderScreen = () => {
                                 </Row>
                             </ListGroup.Item>
                             {
-                                !order.isPaid && (
+                                !order.isPaid && !userInfo.isAdmin && (
                                     <ListGroup.Item>
                                         {loadingPay ? <Loader /> : (
                                             <PayPalScriptProvider options={initialOptionsPayPal}>
@@ -199,13 +203,27 @@ const OrderScreen = () => {
                                 )
                             }
 
+                            {userInfo && userInfo.isAdmin && (
+                                <ListGroup.Item>
+                                    <Button
+                                        type='button'
+                                        className='btn btn-block w-100'
+                                        onClick={paidHandler}
+                                        disabled={order.isPaid}
+                                    >
+                                        Mark As Paid
+                                    </Button>
+                                </ListGroup.Item>
+                            )}
+
                             {loadingDeliver && <Loader />}
-                            {userInfo && userInfo.isAdmin && order.isPaid && !order.isDelivered && (
+                            {userInfo && userInfo.isAdmin && (
                                 <ListGroup.Item>
                                     <Button
                                         type='button'
                                         className='btn btn-block w-100'
                                         onClick={deliverHandler}
+                                        disabled={order.isDelivered || !order.isPaid}
                                     >
                                         Mark As Delivered
                                     </Button>

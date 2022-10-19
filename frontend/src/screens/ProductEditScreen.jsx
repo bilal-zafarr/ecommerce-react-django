@@ -61,6 +61,26 @@ const ProductEditScreen = () => {
 
     const submitHandler = (e) => {
         e.preventDefault()
+        if (name === "") {
+            alert("Name is required")
+            return
+        }
+        if (image === "") {
+            alert("Image is required")
+            return
+        }
+        if (brand === "") {
+            alert("Brand is required")
+            return
+        }
+        if (category === "") {
+            alert("Category is required")
+            return
+        }
+        if (description === "") {
+            alert("Description is required")
+            return
+        }
         dispatch(updateProduct({
             _id: productId,
             name,
@@ -105,7 +125,7 @@ const ProductEditScreen = () => {
             </Link>
 
             <FormContainer>
-                <h1>Edit Product</h1>
+                <h1>Product</h1>
                 {loadingUpdate && <Loader />}
                 {errorUpdate && <Message variant="danger">{errorUpdate}</Message>}
                 {loading ? <Loader /> : error ? <Message variant="danger">{error}</Message> : (
@@ -192,7 +212,7 @@ const ProductEditScreen = () => {
                         </Form.Group>
 
                         <Button type="submit" variant="primary" className="mt-3">
-                            Update
+                            Submit
                         </Button>
                     </Form>
                 )}

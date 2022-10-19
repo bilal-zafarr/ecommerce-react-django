@@ -1,7 +1,7 @@
 from base.models import *
 from base.serializer import *
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 
 
@@ -65,6 +65,7 @@ def deleteProduct(request, pk):
 
 
 @api_view(["POST"])
+@permission_classes([IsAdminUser])
 def uploadImage(request):
     data = request.data
     product_id = data["product_id"]
